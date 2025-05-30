@@ -16,9 +16,9 @@ V -> "smiled" | "tell" | "were"
 """
 
 NONTERMINALS = """
-S -> N V
-NP -> Det N | Det Adj N | N | NP PP
-VP -> V | V NP | V NP PP | V PP | Adv VP | VP Adv
+S -> NP VP | S Conj S
+NP -> N | Det N | Det Adj N | NP PP | Det Adj Adj N
+VP -> V | V NP | V PP | Adv VP | V NP PP | VP Adv
 PP -> P NP
 """
 
@@ -71,10 +71,8 @@ def preprocess(sentence):
     
     clean_words = []
     for word in words:
-        for letter in word:
-            if letter.isalpha():
-                clean_words.append(word)
-                break
+        if any(c.isalpha() for c in word):
+            clean_words.append(word)
 
     return clean_words
 
