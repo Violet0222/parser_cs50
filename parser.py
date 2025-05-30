@@ -1,7 +1,7 @@
 import nltk
 import sys
 
-nltk.download('punkt_tab')
+nltk.download('punkt')
 TERMINALS = """
 Adj -> "country" | "dreadful" | "enigmatical" | "little" | "moist" | "red"
 Adv -> "down" | "here" | "never"
@@ -16,7 +16,7 @@ V -> "smiled" | "tell" | "were"
 """
 
 NONTERMINALS = """
-S -> NP VP | S Conj S
+S -> NP VP | S Conj S | S Conj VP
 NP -> N | Det N | Det Adj N | NP PP | Det Adj Adj N
 VP -> V | V NP | V PP | Adv VP | V NP PP | VP Adv
 PP -> P NP
@@ -83,20 +83,16 @@ def np_chunk(tree):
     whose label is "NP" that does not itself contain any other
     noun phrases as subtrees.
     """
-    
     chunks = []
-    
-    for part in tree.subtrees():
-        if part.label() == "NP":
-            has_inner_np = False
-            for smaller in part.subtrees():
-                if smaller != part and smaller.label() == "NP":
-                    has_inner_np = True
+    for subtree in tree.subtrees():
+        if subtree.label() == "NP":
+            inner_np = False
+            for inner_subtree in subtree.subtrees():
+                if inner_subtree != subtree and inner_subtree.label() == "NP":
+                    inner_np = True
                     break
-
-                if not has_inner_np:
-                    chunks.append(part)
-        
+            if not inner_np:
+                chunks.append(subtree)
     return chunks
 
 if __name__ == "__main__":
